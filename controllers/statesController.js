@@ -1,6 +1,6 @@
 const States = require('../model/States');
 
-// Get all state data
+// Function to get all state data
 const getAllStates = async (req, res) => {
     try {
         const states = await States.find();
@@ -8,29 +8,25 @@ const getAllStates = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Get state data for contiguous states
+// Function to get state data for contiguous states
 const getContiguousStates = async (req, res) => {
     try {
-        // Define an array of contiguous state codes
         const contiguousStateCodes = [
             'AL', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 
             'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 
             'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 
             'WV', 'WI', 'WY'
         ];
-
-        // Query the database to find states with state codes in the contiguousStateCodes array
         const contiguousStates = await States.find({ stateCode: { $in: contiguousStateCodes } });
-
         res.json(contiguousStates);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Get a random fun fact for a state
+// Function to get a random fun fact for a state
 const getRandomFunFact = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
@@ -46,9 +42,9 @@ const getRandomFunFact = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Get state capital
+// Function to get state capital
 const getStateCapital = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
@@ -59,9 +55,9 @@ const getStateCapital = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Get state nickname
+// Function to get state nickname
 const getStateNickname = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
@@ -72,9 +68,9 @@ const getStateNickname = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Get state population
+// Function to get state population
 const getStatePopulation = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
@@ -85,9 +81,9 @@ const getStatePopulation = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Get state admission date
+// Function to get state admission date
 const getStateAdmissionDate = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
@@ -98,9 +94,9 @@ const getStateAdmissionDate = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Add new fun fact for a state
+// Function to add a new fun fact for a state
 const addFunFact = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
@@ -117,9 +113,9 @@ const addFunFact = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Update fun fact for a state
+// Function to update a fun fact for a state
 const updateFunFact = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
@@ -137,9 +133,9 @@ const updateFunFact = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Delete fun fact for a state
+// Function to delete a fun fact for a state
 const deleteFunFact = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
@@ -156,10 +152,10 @@ const deleteFunFact = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-// Get state data by state code
-const getStateByCode = async (req, res) => {
+// Function to get all data for a state
+const getStateData = async (req, res) => {
     try {
         const state = await States.findOne({ stateCode: req.params.state });
         if (!state) {
@@ -169,7 +165,8 @@ const getStateByCode = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
+
 
 module.exports = {
     getAllStates,
@@ -182,5 +179,5 @@ module.exports = {
     addFunFact,
     updateFunFact,
     deleteFunFact,
-    getStateByCode
-}
+    getStateData
+};
