@@ -1,62 +1,186 @@
-const data = {
-    employees: require('../model/employees.json'),
-    setEmployees: function (data) { this.employees = data }
+const States = require('../model/States');
+
+// Get all state data
+const getAllStates = async (req, res) => {
+    try {
+        const states = await States.find();
+        res.json(states);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 }
 
-const getAllEmployees = (req, res) => {
-    res.json(data.employees);
+// Get state data for contiguous states
+const getContiguousStates = async (req, res) => {
+    try {
+        // Define an array of contiguous state codes
+        const contiguousStateCodes = [
+            'AL', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 
+            'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 
+            'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 
+            'WV', 'WI', 'WY'
+        ];
+
+        // Query the database to find states with state codes in the contiguousStateCodes array
+        const contiguousStates = await States.find({ stateCode: { $in: contiguousStateCodes } });
+
+        res.json(contiguousStates);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 }
 
-const createNewEmployee = (req, res) => {
-    const newEmployee = {
-        id: data.employees?.length ? data.employees[data.employees.length - 1].id + 1 : 1,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname
+// Get a random fun fact for a state
+const getRandomFunFact = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        const funFacts = state.funFacts;
+        if (!funFacts || funFacts.length === 0) {
+            return res.status(404).json({ message: 'No fun facts available for this state' });
+        }
+        const randomIndex = Math.floor(Math.random() * funFacts.length);
+        res.json({ funFact: funFacts[randomIndex] });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    if (!newEmployee.firstname || !newEmployee.lastname) {
-        return res.status(400).json({ 'message': 'First and last names are required.' });
-    }
-
-    data.setEmployees([...data.employees, newEmployee]);
-    res.status(201).json(data.employees);
 }
 
-const updateEmployee = (req, res) => {
-    const employee = data.employees.find(emp => emp.id === parseInt(req.body.id));
-    if (!employee) {
-        return res.status(400).json({ "message": `Employee ID ${req.body.id} not found` });
+// Get state capital
+const getStateCapital = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        res.json({ state: state.stateCode, capital: state.capital });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-    if (req.body.firstname) employee.firstname = req.body.firstname;
-    if (req.body.lastname) employee.lastname = req.body.lastname;
-    const filteredArray = data.employees.filter(emp => emp.id !== parseInt(req.body.id));
-    const unsortedArray = [...filteredArray, employee];
-    data.setEmployees(unsortedArray.sort((a, b) => a.id > b.id ? 1 : a.id < b.id ? -1 : 0));
-    res.json(data.employees);
 }
 
-const deleteEmployee = (req, res) => {
-    const employee = data.employees.find(emp => emp.id === parseInt(req.body.id));
-    if (!employee) {
-        return res.status(400).json({ "message": `Employee ID ${req.body.id} not found` });
+// Get state nickname
+const getStateNickname = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        res.json({ state: state.stateCode, nickname: state.nickname });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-    const filteredArray = data.employees.filter(emp => emp.id !== parseInt(req.body.id));
-    data.setEmployees([...filteredArray]);
-    res.json(data.employees);
 }
 
-const getEmployee = (req, res) => {
-    const employee = data.employees.find(emp => emp.id === parseInt(req.params.id));
-    if (!employee) {
-        return res.status(400).json({ "message": `Employee ID ${req.params.id} not found` });
+// Get state population
+const getStatePopulation = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        res.json({ state: state.stateCode, population: state.population });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-    res.json(employee);
+}
+
+// Get state admission date
+const getStateAdmissionDate = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        res.json({ state: state.stateCode, admitted: state.admissionDate });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+// Add new fun fact for a state
+const addFunFact = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        const newFunFact = req.body.funFact;
+        if (!newFunFact) {
+            return res.status(400).json({ message: 'Fun fact is required' });
+        }
+        state.funFacts.push(newFunFact);
+        await state.save();
+        res.status(201).json(state);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+// Update fun fact for a state
+const updateFunFact = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        const index = req.body.index;
+        const newFunFact = req.body.funFact;
+        if (!index || !newFunFact) {
+            return res.status(400).json({ message: 'Index and new fun fact are required' });
+        }
+        state.funFacts[index - 1] = newFunFact;
+        await state.save();
+        res.json(state);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+// Delete fun fact for a state
+const deleteFunFact = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        const index = req.body.index;
+        if (!index) {
+            return res.status(400).json({ message: 'Index is required' });
+        }
+        state.funFacts.splice(index - 1, 1);
+        await state.save();
+        res.json(state);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+// Get state data by state code
+const getStateByCode = async (req, res) => {
+    try {
+        const state = await States.findOne({ stateCode: req.params.state });
+        if (!state) {
+            return res.status(404).json({ message: 'State not found' });
+        }
+        res.json(state);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 }
 
 module.exports = {
-    getAllEmployees,
-    createNewEmployee,
-    updateEmployee,
-    deleteEmployee,
-    getEmployee
+    getAllStates,
+    getContiguousStates,
+    getRandomFunFact,
+    getStateCapital,
+    getStateNickname,
+    getStatePopulation,
+    getStateAdmissionDate,
+    addFunFact,
+    updateFunFact,
+    deleteFunFact,
+    getStateByCode
 }
