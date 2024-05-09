@@ -7,10 +7,13 @@ const verifyState = (req, res, next) => {
     // Extract state abbreviation parameter from request
     const stateAbbreviation = req.params.state.toUpperCase(); // Convert to uppercase for consistency
 
-    // Create an array of state abbreviations from the JSON data
-    const stateAbbreviations = statesData.map(state => state.abbreviation);
+    // Log statesData
+    console.log("statesData:", statesData);
 
-    //Log for debug
+    // Create an array of state abbreviations from the JSON data
+    const stateAbbreviations = statesData.map(state => state.code);
+
+    // Log stateAbbreviations
     console.log("State Abbreviations:", stateAbbreviations);
 
     // Check if the state abbreviation is valid
