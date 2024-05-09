@@ -1,4 +1,5 @@
 const States = require('../model/States');
+const statesData = require('../model/statesData.json');
 
 // Function to get all state data
 const getAllStates = async (req, res) => {
@@ -47,11 +48,12 @@ const getRandomFunFact = async (req, res) => {
 // Function to get state capital
 const getStateCapital = async (req, res) => {
     try {
-        const state = await States.findOne({ stateCode: req.params.state });
-        if (!state) {
+        const stateCode = req.params.state;
+        const stateInfo = statesData.find(state => state.code === stateCode);
+        if (!stateInfo) {
             return res.status(404).json({ message: 'State not found' });
         }
-        res.json({ state: state.stateCode, capital: state.capital });
+        res.json({ state: stateInfo.state, capital: stateInfo.capital }); 
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -60,11 +62,12 @@ const getStateCapital = async (req, res) => {
 // Function to get state nickname
 const getStateNickname = async (req, res) => {
     try {
-        const state = await States.findOne({ stateCode: req.params.state });
-        if (!state) {
+        const stateCode = req.params.state;
+        const stateInfo = statesData.find(state => state.code === stateCode);
+        if (!stateInfo) {
             return res.status(404).json({ message: 'State not found' });
         }
-        res.json({ state: state.stateCode, nickname: state.nickname });
+        res.json({ state: stateInfo.state, nickname: stateInfo.nickname });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
