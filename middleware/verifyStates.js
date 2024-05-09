@@ -1,3 +1,4 @@
+console.log("Beginning Middleware!");
 // Import required dependencies
 const statesData = require('../model/statesData.json');
 
@@ -8,6 +9,9 @@ const verifyState = (req, res, next) => {
 
     // Create an array of state abbreviations from the JSON data
     const stateAbbreviations = statesData.map(state => state.abbreviation);
+
+    //Log for debug
+    console.log("State Abbreviations:", stateAbbreviations);
 
     // Check if the state abbreviation is valid
     if (!stateAbbreviations.includes(stateAbbreviation)) {
